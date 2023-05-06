@@ -14,13 +14,13 @@
 
         <el-form-item prop="code">
           <el-input type="text" v-model="loginForm.code" style="width: 250px;margin-right: 5px" placeholder="refresh code"></el-input>
-          <img :src="captchaUrl">
+          <img :src="captchaUrl" @click="refreshCaptcha">
         </el-form-item>
 
 
         <el-form-item>
           <el-checkbox v-model="loginForm.checked" class="loginremember">remenber</el-checkbox>
-          <el-button type="primary" style="width: 100%" @click="submitlogin" >Login</el-button>
+          <el-button type="primary" style="width: 100%" @click="submitLogin" >Login</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -32,7 +32,8 @@ export default {
   name: "login",
   data(){
     return{
-      captchaUrl:'',
+      // using get method, and add time stamp, API name is captcha
+      captchaUrl:'/captcha?time='+ new Date() ,
       loginForm:{
         username:'',
         password:'',
@@ -54,7 +55,10 @@ export default {
     }
   },
   methods:{
-    submitlogin(){
+    refreshCaptcha(){
+        this.captchaUrl = '/captcha?time='+ new Date();
+    },
+    submitLogin(){
       this.$refs.login.validate((valid) => {
         if (valid) {
           alert('submit!');
