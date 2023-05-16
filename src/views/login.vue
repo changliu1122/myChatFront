@@ -28,6 +28,9 @@
 </template>
 
 <script>
+import {postRequest} from "@/utils/api";
+import router from '@/router';
+
 export default {
   name: "login",
   data(){
@@ -55,20 +58,32 @@ export default {
     }
   },
   methods:{
+    //refresh code
     refreshCaptcha(){
         this.captchaUrl = '/captcha?time='+ new Date();
     },
+    //login
     submitLogin(){
       this.$refs.login.validate((valid) => {
         if (valid) {
-          alert('submit!');
+          alert(JSON.stringify(this.loginForm));
+          postRequest('/user/login',this.loginForm).then(resp => {
+            if(resp){
+              //push: can get back to the last page
+              //replace: cannot get back to the last page
+              router.push('/home');
+            }
+
+          })
         } else {
           this.$message.error('Oops, invalid input!');
           return false;
         }
       });
-
     }
+
+    // sign up
+
   }
 }
 </script>
