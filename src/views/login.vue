@@ -22,6 +22,10 @@
           <el-checkbox v-model="loginForm.checked" class="loginremember">remenber</el-checkbox>
           <el-button type="primary" style="width: 100%" @click="submitLogin" >Login</el-button>
         </el-form-item>
+
+        <el-form-item>
+          <el-button type="primary" style="width: 100%" @click="signUp" >New User? Sign up here!</el-button>
+        </el-form-item>
       </el-form>
     </div>
 
@@ -45,11 +49,11 @@ export default {
       rules:{
         username: [
           { required: true, message: 'Please input username', trigger: 'blur' },
-          { min: 3, max: 5, message: 'Length should be 3 to 5', trigger: 'blur' }
+          { min: 3, max: 10, message: 'Length should be 3 to 10', trigger: 'blur' }
         ],
         password: [
           { required: true, message: 'Please input password', trigger: 'blur' },
-          { min: 3, max: 5, message: 'Length should be 3 to 5', trigger: 'blur' }
+          { min: 3, max: 10, message: 'Length should be 3 to 10', trigger: 'blur' }
         ],
         code: [
           { required: true, message: 'Please input code', trigger: 'blur' },
@@ -62,6 +66,9 @@ export default {
     refreshCaptcha(){
         this.captchaUrl = '/captcha?time='+ new Date();
     },
+    signUp(){
+      router.push('/signup');
+    },
     //login
     submitLogin(){
       this.$refs.login.validate((valid) => {
@@ -69,21 +76,32 @@ export default {
           alert(JSON.stringify(this.loginForm));
           postRequest('/user/login',this.loginForm).then(resp => {
             if(resp){
+
+
               //push: can get back to the last page
               //replace: cannot get back to the last page
-              router.push('/home');
-            }
 
+              //new user, sign up first
+              if(resp.status === 201){
+                alert(resp.msg);
+                router.push('/signup');
+              }// good to go
+              else if(resp.status === 200){
+                router.push('/home');
+              }
+              //wrong pwd
+              else{
+                alert(resp.msg);
+              }
+            }
           })
-        } else {
+        }
+        else {
           this.$message.error('Oops, invalid input!');
           return false;
         }
       });
     }
-
-    // sign up
-
   }
 }
 </script>

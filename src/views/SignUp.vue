@@ -1,92 +1,115 @@
 <template>
-  <!DOCTYPE html>
-  <html>
-  <head>
-    <title>Sign Up</title>
+  <div>
+    <el-form :rules="rules" ref="signUp" :model="signUpForm"  class="signUp-container">
+      <h3 class="title">Sign Up</h3>
 
-  </head>
-  <body>
-  <div class="container">
-    <h2>Sign Up</h2>
-    <form>
-      <div class="input-group">
-        <label for="username">Username:</label>
-        <input type="text" id="username" required>
-      </div>
-      <div class="input-group">
-        <label for="email">Email:</label>
-        <input type="email" id="email" required>
-      </div>
-      <div class="input-group">
-        <label for="password">Password:</label>
-        <input type="password" id="password" required>
-      </div>
-      <button class="btn" type="submit">Sign Up</button>
-    </form>
+      <el-form-item prop="username">
+        <el-input type="text" v-model="signUpForm.username" placeholder="username"></el-input>
+      </el-form-item>
+
+      <el-form-item prop="password">
+        <el-input type="password" v-model="signUpForm.password" placeholder="password"></el-input>
+      </el-form-item>
+
+      <el-form-item prop="nickname">
+        <el-input type="nickname" v-model="signUpForm.nickname" placeholder="nickname"></el-input>
+      </el-form-item>
+
+      <el-form-item>
+        <el-button type="primary" style="width: 100%" @click="submit" >Sign Up</el-button>
+      </el-form-item>
+
+    </el-form>
   </div>
-  </body>
-  </html>
 
 </template>
 
 <script>
+import {postRequest} from "@/utils/api";
+import router from '@/router';
+
 export default {
-  name: "SignUp"
+  name: "SignUp",
+  data(){
+    return{
+      signUpForm:{
+        username:'',
+        password:'',
+        nickname:''
+      },
+      rules:{
+        username: [
+          { required: true, message: 'Please input username', trigger: 'blur' },
+          { min: 3, max: 10, message: 'Length should be 3 to 10', trigger: 'blur' }
+        ],
+        password: [
+          { required: true, message: 'Please input password', trigger: 'blur' },
+          { min: 3, max: 10, message: 'Length should be 3 to 10', trigger: 'blur' }
+        ],
+        nickname: [
+          { required: true, message: 'Please input nick name', trigger: 'blur' },
+          { min: 3, max: 10, message: 'Length should be 3 to 5', trigger: 'blur' }
+        ],
+
+      }
+    }
+  },
+  methods:{
+    //sign up
+    submit(){
+      this.$refs.signUp.validate((valid) => {
+        if (valid) {
+          alert(JSON.stringify(this.signUpForm));
+          postRequest('/user/signup',this.signUpForm).then(resp => {
+            if(resp){
+              //push: can get back to the last page
+              //replace: cannot get back to the last page
+
+              //user already exist
+              if(resp.status === 500){
+                alert(resp.msg);
+
+              }// good to go return to login page
+              else if(resp.status === 200){
+                alert(resp.msg);
+                router.push('/');
+              }
+              //unknown error
+              else{
+                alert("unknown error");
+              }
+            }
+          })
+        }
+        else {
+          this.$message.error('Oops, invalid input!');
+          return false;
+        }
+      });
+    }
+
+  }
+
 }
 </script>
 
 <style scoped>
 
-body {
-  font-family: Arial, sans-serif;
-  background-color: #f2f2f2;
-}
+.signUp-container{
 
-.container {
-  width: 400px;
-  margin: 0 auto;
-  padding: 20px;
-  background-color: #ffffff;
-  border-radius: 5px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
+  border-radius: 15px;
+  border:1px solid;
+  background-clip: padding-box;
+  padding: 15px 35px 15px 35px;
+  width: 350px;
+  margin: 180px auto;
 
-h2 {
+}
+.title{
   text-align: center;
 }
 
-.input-group {
-  margin-bottom: 20px;
-}
 
-.input-group label {
-  display: block;
-  font-weight: bold;
-  margin-bottom: 5px;
-}
 
-.input-group input {
-  width: 100%;
-  padding: 10px;
-  font-size: 16px;
-  border-radius: 5px;
-  border: 1px solid #ccc;
-}
-
-.btn {
-  display: block;
-  width: 100%;
-  padding: 10px;
-  font-size: 16px;
-  border-radius: 5px;
-  border: none;
-  background-color: #4CAF50;
-  color: #fff;
-  cursor: pointer;
-}
-
-.btn:hover {
-  background-color: #45a049;
-}
 
 </style>

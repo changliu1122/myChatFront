@@ -62,7 +62,10 @@ axios.interceptors.response.use(success =>{
 // 也可以用这种方式console.log(`一共有${a}个鸡蛋！`) 模版字符串 注意符号
 
 //base: in case the url needs to be changed in the future
-let base = 'http://10.6.97.12:8888/myChat_server';
+//home
+//let base = 'http://10.6.97.12:8888/myChat_server';
+//uni
+let base = 'http://172.18.24.163:8888/myChat_server';
 
 // this is actually a method that can be used globally
 export const postRequest = (url,params) => {
