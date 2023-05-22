@@ -76,8 +76,6 @@ export default {
           alert(JSON.stringify(this.loginForm));
           postRequest('/user/login',this.loginForm).then(resp => {
             if(resp){
-
-
               //push: can get back to the last page
               //replace: cannot get back to the last page
 
@@ -87,6 +85,11 @@ export default {
                 router.push('/signup');
               }// good to go
               else if(resp.status === 200){
+
+                //save login info
+                window.localStorage.setItem("userid",resp.data.id);
+                window.localStorage.setItem("username",resp.data.username);
+
                 router.push('/home');
               }
               //wrong pwd

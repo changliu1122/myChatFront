@@ -65,14 +65,28 @@ axios.interceptors.response.use(success =>{
 //home
 //let base = 'http://10.6.97.12:8888/myChat_server';
 //uni
-let base = 'http://172.18.24.163:8888/myChat_server';
+let base = 'http://172.18.17.82:8888/myChat_server';
 
 // this is actually a method that can be used globally
+
+//java receive a object --axios data --@requestbody
 export const postRequest = (url,params) => {
     return axios({
         method:'post',
         url:`${base}${url}`,
         data: params,
+        headers: {
+            'Content-Type': 'application/json'
+        },
+    })
+}
+
+//java receive a series of params -- axios params @requestParam, @requestParam...
+export const postRequestParams = (url,params) => {
+    return axios({
+        method:'post',
+        url:`${base}${url}`,
+        params: params,
 
     })
 }
