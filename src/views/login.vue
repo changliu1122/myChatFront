@@ -34,6 +34,8 @@
 <script>
 import {postRequest} from "@/utils/api";
 import router from '@/router';
+import test from'@/utils/websocket'
+
 
 export default {
   name: "login",
@@ -73,7 +75,7 @@ export default {
     submitLogin(){
       this.$refs.login.validate((valid) => {
         if (valid) {
-          alert(JSON.stringify(this.loginForm));
+
           postRequest('/user/login',this.loginForm).then(resp => {
             if(resp){
               //push: can get back to the last page
@@ -89,8 +91,12 @@ export default {
                 //save login info
                 window.localStorage.setItem("userid",resp.data.id);
                 window.localStorage.setItem("username",resp.data.username);
+                window.localStorage.setItem("userNickname",resp.data.nickname);
+                window.localStorage.setItem("userAvatar",resp.data.faceImage);
+                window.localStorage.setItem("userAvatarBig",resp.data.faceImageBig);
 
-                router.push('/home');
+               router.push('/home');
+
               }
               //wrong pwd
               else{

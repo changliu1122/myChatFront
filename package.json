@@ -11,12 +11,17 @@
     "axios": "^1.4.0",
     "core-js": "^3.8.3",
     "element-plus": "^2.3.4",
+    "net": "^1.0.2",
     "node-sass": "^8.0.0",
     "qs": "^6.11.2",
     "sass-loader": "^13.2.2",
+    "socket.io-client": "^4.6.2",
+    "socketjs-client": "^1.0.2",
+    "stompjs": "^2.3.3",
     "vue": "^3.2.13",
     "vue-router": "^4.0.3",
-    "vuex": "^4.0.0"
+    "vuex": "^4.0.0",
+    "ws": "^8.13.0"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~5.0.0",

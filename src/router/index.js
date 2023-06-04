@@ -7,6 +7,7 @@ import contact from "@/views/contact.vue";
 import explore from "@/views/explore.vue";
 import setting from "@/views/setting.vue";
 import contactInfo from "@/views/contactInfo.vue";
+import testpage from "@/views/testpage.vue";
 
 
 const routes = [
@@ -47,6 +48,11 @@ const routes = [
         component: setting
       },
     ]
+  },
+  {
+    path:'/test',
+    name: 'test',
+    component: testpage
   },
   {
   path: '/contactInfo',
