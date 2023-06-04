@@ -100,27 +100,46 @@ export default createStore({
 
         webSocket.onmessage=(e)=>{
           //alert("got message!!!!!!!!1")
-          let d = JSON.parse(e.data).chatMSG;
-
-          //render msg when receive msg
-
-          let today = new Date();
-          let date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
-          let time = date+'-' + today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
-          let obj = {
-            msg:d.msg,
-            time:time,
-            avatar:context.state.MsgFriendAvatar,
-            nickname:context.state.MsgFriendNickname,
-            self:false
+          //notify of your friend request was passed!
+          let action = JSON.parse(e.data).action;
+          if(action === 5){// 5 ---- friend request was passed!
+            context.dispatch("requestFriendList"); // for request sender
+            context.dispatch("requestFriendRequestList"); // notify request receiver to load request
           }
-          context.commit("renderMsg",obj);
+          else{
+            //when we receive message online, we need to sign these received message, when we offline and back online again, we will handle this somewhere else differently
+            let d = JSON.parse(e.data).chatMSG;
+            let DataContent = {
+              action:3,   // signed
+              chatMSG:null,
+              extend:d.msgId
+            }
+            context.state.socket.send(JSON.stringify(DataContent));
+
+
+
+            //render msg when receive msg
+            let today = new Date();
+            let date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+            let time = date+'-' + today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+            let obj = {
+              msg:d.msg,
+              time:time,
+              avatar:context.state.MsgFriendAvatar,
+              nickname:context.state.MsgFriendNickname,
+              self:false
+            }
+            context.commit("renderMsg",obj);
+          }
+
+
+
         }
 
 
 
        webSocket.onclose=(e)=>{
-           alert(e);
+           alert(e.reason + "offline, plz refresh!");
        }
 
 

@@ -1,39 +1,25 @@
 <template>
 <!--  v-scroll-bottom="session"-->
-  <div id="message">
-    <ul v-if="session !== []" >
-      <li v-for="entry in session">
-        <p class="time">
-          <span>{{entry.time}}</span>
-        </p>
+  <el-scrollbar max-height="800px">
+    <div id="message">
+      <ul v-if="session !== []" >
+        <li v-for="entry in session">
+          <p class="time">
+            <span>{{entry.time}}</span>
+          </p>
+          <div class="self"  v-if="entry.self === true">
+            <img class="avatar" :src="entry.avatar" alt="">
+            <p class="text">{{entry.msg}}</p>
+          </div>
+          <div class="main" v-if="entry.self === false">
+            <img class="avatar" :src="entry.avatar" alt="">
+            <p class="text">{{entry.msg}}</p>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </el-scrollbar>
 
-
-
-        <div class="self"  v-if="entry.self === true">
-          <img class="avatar" :src="entry.avatar" alt="">
-          <p class="text">{{entry.msg}}</p>
-        </div>
-        <div class="main" v-if="entry.self === false">
-          <img class="avatar" :src="entry.avatar" alt="">
-          <p class="text">{{entry.msg}}</p>
-        </div>
-
-
-
-
-<!--        <div class="main" :class="{self:entry.self}">-->
-<!--          <img class="avatar" :src="entry.self ? img : item.user.img" alt="">-->
-<!--          <p class="text">{{entry.content}}</p>-->
-<!--        </div>-->
-
-
-
-
-      </li>
-
-
-    </ul>
-  </div>
 </template>
 
 <script>

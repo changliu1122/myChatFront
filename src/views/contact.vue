@@ -131,6 +131,8 @@ export default {
       store.commit("setMsgFriendUsername",this.popupUsername);
       store.commit("setMsgFriendNickname",this.popupNickname)
       store.commit("setMsgFriendAvatar",this.popupAvatar);
+      // load chat history
+      // first clear the page
     },
     sendRequest(){
       postRequestParams('/user/sendFriendRequest',this.searchForm).then(resp => {

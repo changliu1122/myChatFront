@@ -197,11 +197,10 @@ export default {
   ]),
   // 一启动就自动调用这个方法 从后端获取好友列表
   mounted:function (){
-    router.push('/chat');
-    store.dispatch('requestFriendList');
-    store.dispatch('requestFriendRequestList');
-    store.dispatch('connect');
 
+    store.dispatch('requestFriendList');
+    router.push('/chat');
+    store.dispatch('connect');
   }
 
 }

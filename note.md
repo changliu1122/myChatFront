@@ -24,4 +24,8 @@ stomp protocol seems better, but is difficult to be integrated into netty, learn
 all value in vuex.state will be gone when the page refresh, store chat info both in vuex and localstorage
 when chatting, the receiverid should be assigned when the send method was called, otherwise(in data assigned) the receiverid will not be update when change friend to chat
 
-window local storage can only store string, when you store a object, should stringfy and parse 
+window local storage can only store string, when you store a object, should stringfy and parse
+
+
+problem:when you pass a friend request, the request receiver will add new friend through refresh the page in code
+but who send this friend request must manually refresh the page to add this new friend

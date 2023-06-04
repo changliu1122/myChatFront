@@ -22,6 +22,7 @@
 import {mapState} from "vuex";
 import {postRequestParams} from "@/utils/api";
 import router from "@/router";
+import store from "@/store";
 export default {
   name: "chat",
   data(){
@@ -40,8 +41,8 @@ export default {
         this.form.sendUserId = item.id;
         postRequestParams('/user/operFriendRequest', this.form).then(resp=>{
           if(resp){
-            location. reload();
-            router.go(0);
+            store.dispatch('requestFriendRequestList');//reload request
+            store.dispatch("requestFriendList");//reload friend list
           }
         })
     },
@@ -51,8 +52,7 @@ export default {
       this.form.sendUserId = item.id;
       postRequestParams('/user/operFriendRequest', this.form).then(resp=>{
         if(resp){
-          location. reload();
-          router.go(0);
+          store.dispatch('requestFriendRequestList');//reload request
         }
       })
     }
@@ -61,7 +61,10 @@ export default {
   computed:mapState([
     // 写state里面的属性
     "friendRequestList"
-  ])
+  ]),
+  mounted:function (){
+
+  }
 
 }
 </script>
