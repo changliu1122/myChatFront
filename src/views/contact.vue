@@ -131,8 +131,18 @@ export default {
       store.commit("setMsgFriendUsername",this.popupUsername);
       store.commit("setMsgFriendNickname",this.popupNickname)
       store.commit("setMsgFriendAvatar",this.popupAvatar);
-      // load chat history
+
       // first clear the page
+
+      // load chat history
+      let chatKey = window.localStorage.getItem("userid") + "with"+ this.popupId;
+      let h = JSON.parse(window.localStorage.getItem(chatKey));
+      if(h === null){
+        h = [];
+      }
+      store.commit("setHistory",h);
+
+
     },
     sendRequest(){
       postRequestParams('/user/sendFriendRequest',this.searchForm).then(resp => {
@@ -181,7 +191,8 @@ export default {
   },
   computed:mapState([
     // 写state里面的属性
-    "contactList"
+    "contactList",
+
   ])
 }
 </script>

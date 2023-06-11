@@ -161,15 +161,31 @@ export default {
           let date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
           let time = date+'-' + today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
           let obj = {
+            id:id,
             msg:this.DataContent.chatMSG.msg,
             time: time,
             avatar: window.localStorage.getItem("userAvatar"),
             nickname:window.localStorage.getItem("userNickname"),
             self:true
           }
-          store.commit("renderMsg",obj);
-          // this.renderSendMsg(this.DataContent.chatMSG);
-          //clear text area after sended
+
+
+          // save this message to the chat history with this friend
+          let chatKey = window.localStorage.getItem("userid") + "with" + id;
+          let chatKey2 =  id + "with" + window.localStorage.getItem("userid");
+          let h = JSON.parse(window.localStorage.getItem(chatKey));
+          if(h === null){
+            h = [];
+          }
+          else{
+            h.push(obj);
+          }
+          store.commit("setHistory",h);
+          window.localStorage.setItem(chatKey, JSON.stringify(h));
+          window.localStorage.setItem(chatKey2, JSON.stringify(h));
+
+
+          //clear text area after sending
           this.textarea = '';
         }
         else{
@@ -177,13 +193,7 @@ export default {
         }
       }
     },
-    // renderSendMsg(data){
-    //   alert(data.msg);
-    //   let obj = {
-    //
-    //   }
-    //   store.commit("renderMsg",obj);
-    // },
+
 
     menuClick(index){
 

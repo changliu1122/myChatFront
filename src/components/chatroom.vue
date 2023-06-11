@@ -1,9 +1,13 @@
 <template>
 <!--  v-scroll-bottom="session"-->
   <el-scrollbar max-height="800px">
+
+<!--    load history first-->
+<!--    current chat will also be added into history, so we dont need session anymore-->
+<!--    friend avatar, nickname... should be added from here, not vuex, cause i may not open a chat room, means i dont have current friend info-->
     <div id="message">
-      <ul v-if="session !== []" >
-        <li v-for="entry in session">
+      <ul v-if="history !== []" >
+        <li v-for="entry in history">
           <p class="time">
             <span>{{entry.time}}</span>
           </p>
@@ -24,17 +28,20 @@
 
 <script>
 import {mapState} from 'vuex'
+import store from "@/store";
+import router from "@/router";
 
 export default {
   name: 'message',
   data () {
     return {
-
+      chatHistory:[],
     }
   },
 
   computed:mapState([
-    'session',
+    // 'session',
+    "history"
 
   ]),
   filters:{
@@ -45,6 +52,23 @@ export default {
       return `${date.getHours()}:${date.getMinutes()}`;
     }
   },
+
+
+  // 一启动就自动调用这个方法
+  // solved once the page was refreshed, the chat page should not change, but the friend id(name) on the header was gone, here we render it every time from local storage
+  mounted:function (){
+    // load chat history
+    let chatKey = window.localStorage.getItem("userid") + "with" + window.localStorage.getItem("MsgFriendId");
+    let h = JSON.parse(window.localStorage.getItem(chatKey));
+    if(h === null){
+      h = [];
+    }
+    store.commit("setHistory",h);
+    store.commit("setMsgFriendId", window.localStorage.getItem("MsgFriendId") )
+  },
+
+
+
   // directives: {/*这个是vue的自定义指令,官方文档有详细说明*/
   //   // 发送消息后滚动到底部,这里无法使用原作者的方法，也未找到合理的方法解决，暂用setTimeout的方法模拟
   //   'scroll-bottom' (el) {
