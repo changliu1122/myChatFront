@@ -1,6 +1,6 @@
 <template>
-<div>chat </div>
-<!--  friend request list-->
+<el-scrollbar max-height="940px">
+  <!--  friend request list-->
   <div id="list" >
     <ul style="padding-left: 0" >
       <li class="li" v-for="(item) in friendRequestList"
@@ -16,6 +16,36 @@
       </li>
     </ul>
   </div>
+
+
+<!--  chat snapshot-->
+
+  <div >
+    <ul v-if="SnapShot !== []">
+
+        <li class="li" v-for="(shot) in SnapShot"
+            :key="shot.id"
+            @click="sendMsg(shot)"
+        >
+          <el-badge :is-dot= notRead class="item">
+          <p>{{shot.id}}</p>
+          <p>{{shot.nickname}}</p>
+          <p>{{shot.msg}}</p>
+          </el-badge>
+
+        </li>
+
+    </ul>
+  </div>
+
+
+
+
+
+</el-scrollbar>
+
+
+
 </template>
 
 <script>
@@ -27,6 +57,7 @@ export default {
   name: "chat",
   data(){
     return{
+      notRead:true,
       form:{
         acceptUserId:'',
         sendUserId:'',
@@ -55,15 +86,41 @@ export default {
           store.dispatch('requestFriendRequestList');//reload request
         }
       })
+    },
+    sendMsg(shot){
+
+      this.notRead = false;
+
+      store.commit("setMsgFriendId",shot.id);
+      store.commit("setMsgFriendUsername",shot.username);
+      store.commit("setMsgFriendNickname",shot.nickname)
+      store.commit("setMsgFriendAvatar",shot.avatar);
+
+      // first clear the page
+
+      // load chat history
+      let chatKey = window.localStorage.getItem("userid") + "with"+ shot.id;
+      let h = JSON.parse(window.localStorage.getItem(chatKey));
+      if(h === null){
+        h = [];
+      }
+      store.commit("setHistory",h);
+
     }
 
   },
   computed:mapState([
     // 写state里面的属性
-    "friendRequestList"
+    "friendRequestList",
+      "SnapShot"
   ]),
   mounted:function (){
-
+    let snapKey = window.localStorage.getItem("userid") + "snapshot";
+    let s = JSON.parse(window.localStorage.getItem(snapKey));
+    if(s === null){
+      s = [];
+    }
+    store.commit("setSnapshot",s);
   }
 
 }
@@ -81,4 +138,10 @@ export default {
   display: inline-block;
   margin-left: 15px;
 }
+
+.item {
+  margin-top: 10px;
+  margin-right: 40px;
+}
+
 </style>

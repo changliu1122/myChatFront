@@ -46,7 +46,8 @@
       <el-container>
 <!--    display who you are chatting with-->
         <el-header style="background-color: cornsilk" >
-          <div v-if="startChat">{{MsgFriendId}}</div>
+          <div >{{MsgFriendId}}</div>
+
         </el-header>
 
 
@@ -166,6 +167,7 @@ export default {
             time: time,
             avatar: window.localStorage.getItem("userAvatar"),
             nickname:window.localStorage.getItem("userNickname"),
+            username:window.localStorage.getItem("MsgFriendUsername"),
             self:true
           }
 
@@ -177,13 +179,39 @@ export default {
           if(h === null){
             h = [];
           }
-          else{
-            h.push(obj);
-          }
+          h.push(obj);
+
           store.commit("setHistory",h);
           window.localStorage.setItem(chatKey, JSON.stringify(h));
           window.localStorage.setItem(chatKey2, JSON.stringify(h));
 
+
+          // add this message to snapshot array with this friend and save to local storage
+
+          let obj2 = {
+            id:id,
+            msg:this.DataContent.chatMSG.msg,
+            time: time,
+            avatar: window.localStorage.getItem("MsgFriendAvatar"),
+            nickname:window.localStorage.getItem("MsgFriendNickname"),
+            username:window.localStorage.getItem("MsgFriendUsername"),
+            self:true
+          }
+
+          let snapKey = window.localStorage.getItem("userid") + "snapshot";
+          let s = JSON.parse(window.localStorage.getItem(snapKey));
+          if(s === null){
+            s = [];
+          }
+          for(let i = 0; i < s.length; i++){
+            if(s[i].id === id){
+              s.splice(i,1);
+            }
+          }
+
+          s.unshift(obj2);
+          store.commit("setSnapshot",s);
+          window.localStorage.setItem(snapKey, JSON.stringify(s));
 
           //clear text area after sending
           this.textarea = '';
@@ -209,6 +237,17 @@ export default {
   mounted:function (){
 
     store.dispatch('requestFriendList');
+    store.dispatch("getUnreadMsg");
+
+
+
+    let snapKey = window.localStorage.getItem("userid") + "snapshot";
+    let s = JSON.parse(window.localStorage.getItem(snapKey));
+    if(s === null){
+      s = [];
+    }
+    store.commit("setSnapshot",s);
+
     router.push('/chat');
     store.dispatch('connect');
   }

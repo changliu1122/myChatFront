@@ -65,7 +65,7 @@ axios.interceptors.response.use(success =>{
 // //home
 // let base = 'http://10.6.97.12:8888/myChat_server';
 // //uni
- let base = 'http://172.18.1.112:8888/myChat_server';
+ let base = 'http://172.18.41.5:8888/myChat_server';
 //
 // // this is actually a method that can be used globally
 //

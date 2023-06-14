@@ -5,6 +5,7 @@
 <!--    load history first-->
 <!--    current chat will also be added into history, so we dont need session anymore-->
 <!--    friend avatar, nickname... should be added from here, not vuex, cause i may not open a chat room, means i dont have current friend info-->
+<!--    only i am currently in chat with you, your message will be render, problem: when i am chatting with other people, the-->
     <div id="message">
       <ul v-if="history !== []" >
         <li v-for="entry in history">
