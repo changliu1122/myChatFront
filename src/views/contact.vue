@@ -3,7 +3,7 @@
   <el-form :rules="rules" ref="searchCheck" :model="searchForm"  class="search-container">
     <el-form-item prop="friendUserName">
       <el-input  type="text" v-model="searchForm.friendUserName" style="width:75%" placeholder="Search Friend"> </el-input>
-      <el-button @click="search" style="width: 20%" type="primary" :icon="Search">
+      <el-button @click="search" style="width: 20%" type="primary" >
         <el-icon style="vertical-align: middle">
         <Search />
       </el-icon>
@@ -13,7 +13,8 @@
 </div>
 
   <el-scrollbar max-height="940px">
-<!--    only for test--><p v-for=" item in 50" >{{item}}</p>
+<!--    only for test-->
+<!--    <p v-for=" item in 50" >{{item}}</p>-->
 
     <ul style="padding-left: 0" >
       <li class="li" v-for="(item) in contactList"
@@ -127,6 +128,8 @@ export default {
   methods:{
     sendMessage(){
       this.popupInfo=false;
+      store.commit("setIsGroupChat",false);
+      store.commit("setGroupChatHistory",null);
       store.commit("setMsgFriendId",this.popupId);
       store.commit("setMsgFriendUsername",this.popupUsername);
       store.commit("setMsgFriendNickname",this.popupNickname)

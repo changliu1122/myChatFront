@@ -91,6 +91,9 @@
 <script>
 import {CircleCloseFilled} from "@element-plus/icons-vue";
 import {postRequest, postRequestParams} from "@/utils/api";
+import router from "@/router";
+import store from "@/store";
+import {ElMessage, ElMessageBox} from "element-plus";
 
 export default {
   name: "setting",
@@ -163,6 +166,35 @@ alert("ok");
 
 
     logout(){
+
+      ElMessageBox.confirm(
+          'you are going to log out. Continue?',
+          'Warning',
+          {
+            confirmButtonText: 'OK',
+            cancelButtonText: 'Cancel',
+            type: 'warning',
+          }
+      )
+          .then(() => {
+            store.dispatch("logout");
+
+            router.push('/');
+
+          })
+          .catch(() => {
+            ElMessage({
+              type: 'info',
+              message: 'canceled',
+            })
+          })
+
+
+
+
+
+
+
 
     }
   }

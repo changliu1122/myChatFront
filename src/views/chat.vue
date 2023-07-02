@@ -1,4 +1,74 @@
 <template>
+
+  <div>
+    <el-button @click="creatGroup" style="width: 100%"  type="primary" >
+      Create a char group
+    </el-button>
+  </div>
+
+  <el-drawer v-model="creatGroupVisible" :show-close="false">
+    <template #header="{ close, titleId, titleClass }">
+      <h4 :id="titleId" :class="titleClass" style="text-align: center">Create a chat group</h4>
+      <el-button type="danger" @click="close">
+        <el-icon class="el-icon--left"><CircleCloseFilled /></el-icon>
+        Close
+      </el-button>
+    </template>
+
+
+
+
+    <el-scrollbar max-height="940px">
+
+      <ul style="padding-left: 0" >
+        <li class="li" v-for="(item) in contactList"
+            :key="item.friendUserId"
+        >
+
+
+          <el-checkbox-group  v-model="checkArr"  @change="checkIfSelect">
+            <el-checkbox  :label="item.friendUsername" size="large" border />
+          </el-checkbox-group>
+
+
+
+
+
+
+
+
+<!--          <img class="avatar" :src="item.friendFaceImage" :alt="item.friendUsername" />-->
+<!--          <p class="name">{{item.friendUsername}}</p>-->
+
+        </li>
+      </ul>
+    </el-scrollbar>
+
+
+    <el-row>
+      <el-col :span="24"><el-button @click="create" style="width: 100%" type="success">create</el-button></el-col>
+    </el-row>
+
+  </el-drawer>
+
+  <el-dialog v-model="setName" title="Set up new group name">
+    <el-form :rules="rules" ref="checkname"  :model="groupNameForm" >
+      <el-form-item prop="groupName">
+        <el-input type="text" v-model="groupNameForm.groupName" placeholder="new group name"></el-input>
+      </el-form-item>
+    </el-form>
+
+
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button @click="setName = false">Cancel</el-button>
+        <el-button type="primary" @click="finishGroupCreation">
+          Confirm
+        </el-button>
+      </span>
+    </template>
+  </el-dialog>
+
 <el-scrollbar max-height="940px">
   <!--  friend request list-->
   <div id="list" >
@@ -18,8 +88,21 @@
   </div>
 
 
-<!--  chat snapshot-->
+<!--  group chat-->
+  <div>
+    <ul>
+      <li  v-for="(item) in chatGroups"
+            :key="item.index"
+           @click="sendGroupMsg(item)"
+      >
+        <p>{{item.groupName}}</p>
+        <p>{{item.groupChatSS}}</p>
 
+      </li>
+    </ul>
+  </div>
+
+<!--  chat snapshot-->
   <div >
     <ul v-if="SnapShot !== []">
 
@@ -43,25 +126,40 @@
 
 
 </el-scrollbar>
-
-
-
 </template>
 
 <script>
 import {mapState} from "vuex";
-import {postRequestParams} from "@/utils/api";
+import {postRequest, postRequestParams} from "@/utils/api";
 import router from "@/router";
 import store from "@/store";
+import {CircleCloseFilled} from "@element-plus/icons-vue";
 export default {
   name: "chat",
+  components: {CircleCloseFilled},
   data(){
     return{
+      groupNameForm:{
+        groupName:"",
+      },
+
       notRead:true,
       form:{
         acceptUserId:'',
         sendUserId:'',
         op:0
+      },
+
+
+      checkArr:[],
+      groupList:[],
+      creatGroupVisible: false,
+      setName:false,
+      rules:{
+        groupName: [
+          { required: true, message: 'invalid input!', trigger: 'blur' },
+          { min: 1, max: 15, message: 'Length should be 3 to 10', trigger: 'blur' }
+        ]
       }
     }
   },
@@ -88,9 +186,10 @@ export default {
       })
     },
     sendMsg(shot){
-
+      store.commit("setGroupChatHistory",null);
+      store.commit("setIsGroupChat",false);
       this.notRead = false;
-
+      store.commit("setIsGroupChat",false);
       store.commit("setMsgFriendId",shot.id);
       store.commit("setMsgFriendUsername",shot.username);
       store.commit("setMsgFriendNickname",shot.nickname)
@@ -106,13 +205,71 @@ export default {
       }
       store.commit("setHistory",h);
 
+    },
+    // get checked friend name as a array
+    checkIfSelect(e){
+        this.groupList = e;
+    },
+    creatGroup(){
+      this.creatGroupVisible = true;
+    },
+    create(){
+      if(this.groupList === null || this.groupList.length === 0){
+        alert("You have to select at least one friend!");
+      }else{
+        this.setName = true;
+      }
+    },
+    finishGroupCreation(){
+      this.$refs.checkname.validate((valid)=>{
+        if(valid){
+
+          let group = {
+            groupLst :this.groupList,
+            groupName : this.groupNameForm.groupName
+          }
+          store.commit("setGroup", group);
+
+          store.commit("setIsGroupChat",true);
+          store.commit("setMsgFriendId",this.groupNameForm.groupName);
+
+          store.commit("setHistory",null);
+
+          this.setName = false;
+          this.groupNameForm.groupName = "";
+          this.groupList = [];
+          this.checkArr = [];
+          this.creatGroupVisible = false;
+        }
+        else{
+          this.$message.error('Oops, invalid input!');
+          return false;
+        }
+      });
+    },
+    sendGroupMsg(item){
+      store.commit("setIsGroupChat",true);
+      store.commit("setMsgFriendId",item.groupName);
+      store.commit("setHistory",null);
+
+      let groupKey = store.state.MsgFriendId + window.localStorage.getItem("userid")
+      let groupInfo = JSON.parse(window.localStorage.getItem(groupKey));
+      let his = groupInfo.groupChatHistory;
+      if(his === null){
+        his = [];
+      }
+
+      store.commit("setGroupChatHistory",his);
+
     }
 
   },
   computed:mapState([
     // 写state里面的属性
     "friendRequestList",
-      "SnapShot"
+      "SnapShot",
+      "contactList",
+      "chatGroups"
   ]),
   mounted:function (){
     let snapKey = window.localStorage.getItem("userid") + "snapshot";
@@ -121,6 +278,14 @@ export default {
       s = [];
     }
     store.commit("setSnapshot",s);
+
+    let chatGroupKey = "chatGroups"+window.localStorage.getItem("userid");
+    let c = JSON.parse(window.localStorage.getItem(chatGroupKey));
+    if(c === null){
+      c = [];
+    }
+
+    store.commit("setChatGroups",c);
   }
 
 }

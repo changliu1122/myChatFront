@@ -22,6 +22,43 @@
           </div>
         </li>
       </ul>
+
+
+
+
+
+
+      <ul v-if="groupChatHistory !== []" >
+        <li v-for="entry in groupChatHistory">
+          <p class="time">
+            <span>{{entry.time}}</span>
+          </p>
+          <div class="self"  v-if="entry.self === true">
+            <img class="avatar" :src="entry.senderAvatar" alt="">
+            <div>
+              <p>{{entry.senderId}}</p>
+              <p class="text">{{entry.msg}}</p>
+            </div>
+
+          </div>
+          <div class="main" v-if="entry.self === false">
+            <img class="avatar" :src="entry.senderAvatar" alt="">
+            <div>
+              <p>{{entry.senderId}}</p>
+              <p class="text">{{entry.msg}}</p>
+            </div>
+          </div>
+        </li>
+      </ul>
+
+
+
+
+
+
+
+
+
     </div>
   </el-scrollbar>
 
@@ -41,8 +78,9 @@ export default {
   },
 
   computed:mapState([
-    // 'session',
-    "history"
+    "history",
+    "groupChatHistory",
+    "MsgFriendId"
 
   ]),
   filters:{
@@ -58,14 +96,30 @@ export default {
   // 一启动就自动调用这个方法
   // solved once the page was refreshed, the chat page should not change, but the friend id(name) on the header was gone, here we render it every time from local storage
   mounted:function (){
-    // load chat history
-    let chatKey = window.localStorage.getItem("userid") + "with" + window.localStorage.getItem("MsgFriendId");
-    let h = JSON.parse(window.localStorage.getItem(chatKey));
-    if(h === null){
-      h = [];
+
+    let isGroupChat = JSON.parse(window.localStorage.getItem("isGroupChat"));
+    if(isGroupChat){
+      //load group chat
+      let groupKey = window.localStorage.getItem("MsgFriendId") + window.localStorage.getItem("userid")
+      let groupInfo = JSON.parse(window.localStorage.getItem(groupKey));
+      if(groupInfo != null){
+        if(groupInfo.groupChatHistory === null){
+          groupInfo.groupChatHistory = [];
+        }
+        store.commit("setGroupChatHistory",groupInfo.groupChatHistory);
+      }
+
     }
-    store.commit("setHistory",h);
-    store.commit("setMsgFriendId", window.localStorage.getItem("MsgFriendId") )
+    else{
+      // load chat history
+      let chatKey = window.localStorage.getItem("userid") + "with" + window.localStorage.getItem("MsgFriendId");
+      let h = JSON.parse(window.localStorage.getItem(chatKey));
+      if(h === null){
+        h = [];
+      }
+      store.commit("setHistory",h);
+      store.commit("setMsgFriendId", window.localStorage.getItem("MsgFriendId") )
+    }
   },
 
 
